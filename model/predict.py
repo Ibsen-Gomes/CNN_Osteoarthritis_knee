@@ -11,24 +11,24 @@ from tkinter import filedialog
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from model import create_model  # ✅ Agora a importação funcionará
 
-# 🔹 URL do modelo armazenado no GitHub Actions, na branch `deploy`
-GITHUB_MODEL_URL = "https://github.com/Ibsen-Gomes/Osteo-CNN/model/model.pth"
+# 🔹 URL do modelo armazenado no GitHub Actions, agora na branch 'main'
+GITHUB_MODEL_URL = "https://github.com/Ibsen-Gomes/Osteo-CNN/raw/main/model/model.pth"
 
 # 🔹 Caminho para salvar o modelo baixado localmente
 MODEL_PATH = "model/model.pth"
 
 # 🔹 Baixar modelo treinado do GitHub Actions
 def download_model():
-    """ Faz o download do modelo treinado da branch 'deploy' do GitHub. """
+    """ Faz o download do modelo treinado da branch 'main' do GitHub. """
     if not os.path.exists(MODEL_PATH):  # Evita baixar se já existir
-        print("🔽 Baixando modelo treinado da branch 'deploy' no GitHub...")
+        print("🔽 Baixando modelo treinado da branch 'main' no GitHub...")
         response = requests.get(GITHUB_MODEL_URL, stream=True)
         if response.status_code == 200:
             with open(MODEL_PATH, "wb") as f:
                 f.write(response.content)
             print("✅ Modelo baixado com sucesso!")
         else:
-            print("❌ Erro ao baixar o modelo. Verifique a URL do GitHub Actions e a branch 'deploy'.")
+            print("❌ Erro ao baixar o modelo. Verifique a URL do GitHub Actions e a branch 'main'.")
             sys.exit(1)
     else:
         print("✅ Modelo já disponível localmente.")
