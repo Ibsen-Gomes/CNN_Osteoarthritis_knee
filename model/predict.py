@@ -9,7 +9,7 @@ import tkinter as tk
 from tkinter import filedialog
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from model import create_model  # ✅ Agora a importação funcionará
+from model import create_model  # ✅ Importando o modelo do arquivo model.py
 
 # 🔹 URL do modelo armazenado no GitHub Actions, agora na branch 'main'
 GITHUB_MODEL_URL = "https://github.com/Ibsen-Gomes/Osteo-CNN/raw/main/model/model.pth"
