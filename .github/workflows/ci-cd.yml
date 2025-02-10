@@ -7,7 +7,7 @@ on:
       # 🚀 Incluindo a nova branch no pipeline
 
 jobs:
-  test:
+  unit-tests:  # Renomeado para evitar confusão com "teste" no contexto de deep learning
     runs-on: ubuntu-latest
     steps:
       - name: Checkout do código  # Baixa o código do repositório
@@ -21,11 +21,11 @@ jobs:
       - name: Instalar dependências  # Instala pacotes listados no requirements.txt
         run: pip install -r api/requirements.txt
 
-      - name: Testar modelo  # Executa testes unitários antes do treino
+      - name: Executar testes unitários  # Executa testes unitários antes do treino
         run: pytest tests/test_train.py
 
-  train:
-    needs: test  # Só executa se os testes passarem
+  train-model:  # Renomeado para destacar que é a etapa de treinamento
+    needs: unit-tests  # Só executa se os testes unitários passarem
     runs-on: ubuntu-latest
     steps:
       - name: Checkout do código
@@ -48,10 +48,10 @@ jobs:
           name: trained-model
           path: model/model.pth
 
-  deploy:
-    needs: train  # Só executa após o treinamento ser concluído
+  deploy-model:  # Renomeado para deixar claro que é o deploy do modelo
+    needs: train-model  # Só executa após o treinamento ser concluído
     runs-on: ubuntu-latest
-    timeout-minutes: 20  # Define tempo limite de 10 min para o deploy
+    timeout-minutes: 20  # Define tempo limite de 20 min para o deploy
     steps:
       - name: Checkout do código
         uses: actions/checkout@v2
@@ -64,7 +64,7 @@ jobs:
       - name: Instalar dependências
         run: pip install -r api/requirements.txt
 
-      - name: Baixar modelo treinado  # Baixa o modelo gerado na etapa train
+      - name: Baixar modelo treinado  # Baixa o modelo gerado na etapa train-model
         uses: actions/download-artifact@v4
         with:
           name: trained-model
