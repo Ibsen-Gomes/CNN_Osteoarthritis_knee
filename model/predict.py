@@ -16,7 +16,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from model import create_model  # ✅ Importando o modelo do arquivo model.py
 
 # 🔹 URL do modelo armazenado no GitHub Actions, agora na branch 'main'
-GITHUB_MODEL_URL = "https://github.com/Ibsen-Gomes/Osteo-CNN/raw/main/model/model.pth"
+GITHUB_MODEL_URL = "https://github.com/Ibsen-Gomes/CNN_Osteoarthritis_knee/raw/main/model/model.pth"
 
 # 🔹 Caminho para salvar o modelo baixado localmente
 MODEL_PATH = "model/model.pth"
