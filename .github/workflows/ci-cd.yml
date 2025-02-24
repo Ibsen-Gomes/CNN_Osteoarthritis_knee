@@ -1,74 +1,89 @@
+# ==============================
+# 1. Pipeline de CI/CD para Deep Learning
+# ==============================
+
 name: CI/CD for Deep Learning  # Nome do pipeline
 
+# Definindo os gatilhos para execução do pipeline
 on:
   push:
     branches:
       - main
-      # 🚀 Incluindo a nova branch no pipeline
+      # 🚀 Incluindo a nova branch no pipeline para monitorar atualizações no branch principal
 
+# Definição dos jobs que serão executados no pipeline
 jobs:
+  # ==============================
+  # 2. Job para executar os testes unitários
+  # ==============================
   unit-tests:  # Renomeado para evitar confusão com "teste" no contexto de deep learning
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # Executa o job em uma máquina Ubuntu mais recente
     steps:
-      - name: Checkout do código  # Baixa o código do repositório
-        uses: actions/checkout@v2
+      - name: Checkout do código  # Baixa o código do repositório para a máquina de execução
+        uses: actions/checkout@v2  # Ação do GitHub para fazer o checkout do código
 
-      - name: Configurar Python  # Define a versão do Python
-        uses: actions/setup-python@v3
+      - name: Configurar Python  # Define a versão do Python para o ambiente
+        uses: actions/setup-python@v3  # Ação que configura a versão do Python
         with:
-          python-version: "3.9"
+          python-version: "3.9"  # Especifica a versão do Python (3.9)
 
-      - name: Instalar dependências  # Instala pacotes listados no requirements.txt
-        run: pip install -r api/requirements.txt
+      - name: Instalar dependências  # Instala as dependências listadas no arquivo requirements.txt
+        run: pip install -r api/requirements.txt  # Instala os pacotes necessários para rodar a API
 
-      - name: Executar testes unitários  # Executa testes unitários antes do treino
-        run: pytest tests/test_train.py
+      - name: Executar testes unitários  # Executa os testes unitários para garantir a integridade do código
+        run: pytest tests/test_train.py  # Roda os testes definidos no arquivo test_train.py
 
+  # ==============================
+  # 3. Job para treinar o modelo
+  # ==============================
   train-model:  # Renomeado para destacar que é a etapa de treinamento
     needs: unit-tests  # Só executa se os testes unitários passarem
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # Executa o job em uma máquina Ubuntu mais recente
     steps:
-      - name: Checkout do código
-        uses: actions/checkout@v2
+      - name: Checkout do código  # Baixa o código do repositório para a máquina de execução
+        uses: actions/checkout@v2  # Ação do GitHub para fazer o checkout do código
 
-      - name: Configurar Python
-        uses: actions/setup-python@v3
+      - name: Configurar Python  # Define a versão do Python para o ambiente
+        uses: actions/setup-python@v3  # Ação que configura a versão do Python
         with:
-          python-version: "3.9"
+          python-version: "3.9"  # Especifica a versão do Python (3.9)
 
-      - name: Instalar dependências
-        run: pip install -r api/requirements.txt
+      - name: Instalar dependências  # Instala as dependências listadas no arquivo requirements.txt
+        run: pip install -r api/requirements.txt  # Instala os pacotes necessários para rodar a API
 
       - name: Treinar modelo  # Executa o treinamento do modelo
-        run: python model/train.py
+        run: python model/train.py  # Roda o script de treinamento do modelo
 
-      - name: Armazenar modelo treinado  # Salva o modelo treinado como artefato
-        uses: actions/upload-artifact@v4
+      - name: Armazenar modelo treinado  # Salva o modelo treinado como artefato para uso posterior
+        uses: actions/upload-artifact@v4  # Ação para fazer o upload do modelo treinado
         with:
-          name: trained-model
-          path: model/model.pth
+          name: trained-model  # Nome do artefato
+          path: model/model.pth  # Caminho do arquivo do modelo treinado
 
+  # ==============================
+  # 4. Job para deploy do modelo
+  # ==============================
   deploy-model:  # Renomeado para deixar claro que é o deploy do modelo
-    needs: train-model  # Só executa após o treinamento ser concluído
-    runs-on: ubuntu-latest
-    timeout-minutes: 20  # Define tempo limite de 20 min para o deploy
+    needs: train-model  # Só executa após o treinamento ser concluído com sucesso
+    runs-on: ubuntu-latest  # Executa o job em uma máquina Ubuntu mais recente
+    timeout-minutes: 20  # Define um tempo limite de 20 minutos para o deploy do modelo
     steps:
-      - name: Checkout do código
-        uses: actions/checkout@v2
+      - name: Checkout do código  # Baixa o código do repositório para a máquina de execução
+        uses: actions/checkout@v2  # Ação do GitHub para fazer o checkout do código
 
-      - name: Configurar Python
-        uses: actions/setup-python@v3
+      - name: Configurar Python  # Define a versão do Python para o ambiente
+        uses: actions/setup-python@v3  # Ação que configura a versão do Python
         with:
-          python-version: "3.9"
+          python-version: "3.9"  # Especifica a versão do Python (3.9)
 
-      - name: Instalar dependências
-        run: pip install -r api/requirements.txt
+      - name: Instalar dependências  # Instala as dependências listadas no arquivo requirements.txt
+        run: pip install -r api/requirements.txt  # Instala os pacotes necessários para rodar a API
 
-      - name: Baixar modelo treinado  # Baixa o modelo gerado na etapa train-model
-        uses: actions/download-artifact@v4
+      - name: Baixar modelo treinado  # Baixa o modelo treinado da etapa anterior
+        uses: actions/download-artifact@v4  # Ação para fazer o download do artefato do modelo treinado
         with:
-          name: trained-model
-          path: model/
+          name: trained-model  # Nome do artefato a ser baixado
+          path: model/  # Caminho para onde o modelo será salvo
 
-      - name: Rodar API com FastAPI  # Inicia a API para servir o modelo
-        run: uvicorn api.main:app --host 0.0.0.0 --port 8000 &  # Executa em background
+      - name: Rodar API com FastAPI  # Inicia a API FastAPI para servir o modelo
+        run: uvicorn api.main:app --host 0.0.0.0 --port 8000 &  # Executa o servidor em segundo plano para servir a API
